@@ -54,6 +54,7 @@ model Product {
 }
 
 model ProductImage {
+  @@map("product_image")
   id          Int      @id @default(autoincrement())
   link        String   
   isDefault   Boolean @default(false)
@@ -74,6 +75,7 @@ model Category {
 }
 
 model CategoryProduct {
+  @@map("category_product")
   id          Int      @id @default(autoincrement())
   category    Category @relation(fields: [categoryId], references: [id])
   categoryId  Int
@@ -96,6 +98,7 @@ model Order {
 }
 
 model OrderProduct {
+  @@map("order_profuct")
   id            Int      @id @default(autoincrement())
   quantity      String   
   price         Decimal
@@ -117,6 +120,7 @@ model Cart {
 }
 
 model CartProduct {
+  @@map("cart_product")
   id            Int      @id @default(autoincrement())
   quantity      Int
   createdAt     DateTime @default(now())
