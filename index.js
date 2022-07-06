@@ -14,7 +14,7 @@ import typeDefs from './schema/schema';
 import resolvers from './resolver/resolver';
 
 // Router
-import { userRouter, categoryRouter } from './routes/admin';
+import adminRouter from './routes/admin';
 
 const app = express();
 // eslint-disable-next-line no-underscore-dangle
@@ -61,7 +61,7 @@ app.get('/', (req, res) => {
   res.render('index', { title: 'Hey', message: 'Hello there!' });
 });
 
-app.use('/admin', [userRouter, categoryRouter]);
+app.use('/admin', adminRouter);
 
 const port = 3000;
 app.listen(port, () => {
