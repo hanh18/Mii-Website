@@ -2,7 +2,11 @@ const arrMessage = {
   MESSAGE_TOKEN_EXPIRED: 'Token expired',
 
   MESSAGE_CANNOT_DELETE_USER: 'Can\'t delete user',
-  MESSAGE_USER_NOT_FOUND: 'User not found',
+  MESSAGE_USER_NOT_FOUND: 'User does not exist',
+
+  MESSAGE_CATEGORY_NOT_FOUND: 'Category does not exist',
+  MESSAGE_REQUIRED_NAME_CATEGORY: 'Category name is require',
+  MESSAGE_CANNNOT_DELETE_CATEGORY: 'There are products in this category',
 
   MESSAGE_ERROR_INTERNAL_SERVER: 'Internal Server Error',
   MESSAGE_INVALID_PHONE: 'Invalid phone',

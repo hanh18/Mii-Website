@@ -18,9 +18,14 @@ const success = (res, data, message = 'Success') => {
   res.status(200).json({ message, data });
 };
 
+const notFound = (res, message = arrMessage.MESSAGE_NOT_FOUND) => {
+  res.status(404).json({ message });
+};
+
 export default {
   badRequest,
   serverError,
   error,
   success,
+  notFound,
 };
