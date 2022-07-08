@@ -8,6 +8,13 @@ const arrMessage = {
   MESSAGE_REQUIRED_NAME_CATEGORY: 'Category name is require',
   MESSAGE_CANNNOT_DELETE_CATEGORY: 'There are products in this category',
 
+  MESSAGE_PRODUCT_NOT_FOUND: 'Product does not exist',
+  MESSAGE_IMAGE_NOT_FOUND: 'Image does not exist',
+  MESSAGE_PRODUCT_CATEGORY_NOT_FOUND: 'Category or product do not exist',
+  MESSAGE_PRODUCT_CATEGORY_ALREADY_EXISTS: 'Category already exists',
+  MESSAGE_AMOUNT_INVALID: 'Amount invalid',
+  MESSAGE_CANNOT_DELETE_PRODUCT: 'There are orders containing products',
+
   MESSAGE_ERROR_INTERNAL_SERVER: 'Internal Server Error',
   MESSAGE_INVALID_PHONE: 'Invalid phone',
   MESSAGE_REQUIRED_PASSWORD: 'Password is required',
