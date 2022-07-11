@@ -130,3 +130,10 @@ model CartProduct {
   product       Product  @relation(fields: [productId], references: [id])
   productId     Int
 }
+
+model Session {
+  id          String   @id
+  sid         String   @unique
+  data        String   @db.Text
+  expiresAt   DateTime
+}

@@ -6,6 +6,9 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import methodOverride from 'method-override';
 import { ApolloServer } from 'apollo-server-express';
+import session from 'express-session';
+import { PrismaSessionStore } from '@quixo3/prisma-session-store';
+import { PrismaClient } from '@prisma/client';
 
 import mongoDataMethods from './data/query';
 
@@ -15,10 +18,12 @@ import resolvers from './resolver/resolver';
 
 // Router
 import adminRouter from './routes/admin';
+import authAdminRouter from './routes/auth.admin';
 
 const app = express();
 // eslint-disable-next-line no-underscore-dangle
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const prisma = new PrismaClient();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -51,17 +56,44 @@ async function startServer() {
 
     apolloServer.applyMiddleware({ app });
   } catch (error) {
-    return console.log(error);
+    throw new Error(error);
   }
 }
 
 startServer();
 
+// Creating session
+app.use(session({
+  secret: 'key that will sign cookie',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    expires: 60 * 60 * 24,
+  },
+  store: new PrismaSessionStore(
+    prisma,
+    {
+      checkPeriod: 2 * 60 * 1000, // ms
+      dbRecordIdIsSessionId: true,
+      dbRecordIdFunction: undefined,
+    },
+  ),
+}));
+
+const isAuthAdmin = (req, res, next) => {
+  if (req.session.isAuthAdmin) {
+    next();
+  } else {
+    res.send('Login is require');
+  }
+};
+
 app.get('/', (req, res) => {
   res.render('index', { title: 'Hey', message: 'Hello there!' });
 });
 
-app.use('/admin', adminRouter);
+app.use('/auth/admin', authAdminRouter);
+app.use('/admin', isAuthAdmin, adminRouter);
 
 const port = 3000;
 app.listen(port, () => {
