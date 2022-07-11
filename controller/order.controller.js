@@ -37,6 +37,12 @@ const getOrderById = async (req, res) => {
 const changeStatus = async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
+    const { status } = req.body;
+
+    // Check valid status
+    if (!(status in orderStatus)) {
+      return arrResponse.badRequest(res, arrMessage.MESSAGE_STATUS_ORDER_INVALID);
+    }
 
     const order = await prisma.order.findFirst({
       where: { id },
@@ -47,11 +53,10 @@ const changeStatus = async (req, res) => {
       return arrResponse.badRequest(res, arrMessage.MESSAGE_ORDER_NOT_FOUND);
     }
 
-    const { status } = order;
     const payment = order.paymentMethod;
 
-    // status = completed
-    if (status === orderStatus.completed) {
+    // status = pending
+    if (status === orderStatus.pending) {
       const updateOrder = await prisma.order.update({
         where: {
           id,
@@ -65,7 +70,7 @@ const changeStatus = async (req, res) => {
       return arrResponse.success(res, updateOrder);
     }
 
-    // status = pending
+    // status = completed
     const data = {
       status: orderStatus.completed,
     };
