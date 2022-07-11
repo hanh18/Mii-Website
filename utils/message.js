@@ -3,6 +3,7 @@ const arrMessage = {
 
   MESSAGE_CANNOT_DELETE_USER: 'Can\'t delete user',
   MESSAGE_USER_NOT_FOUND: 'User does not exist',
+  MESSAGE_ADMIN_NOT_FOUND: 'Admin does not exist',
 
   MESSAGE_CATEGORY_NOT_FOUND: 'Category does not exist',
   MESSAGE_REQUIRED_NAME_CATEGORY: 'Category name is require',
@@ -23,6 +24,7 @@ const arrMessage = {
   MESSAGE_REQUIRED_PASSWORD: 'Password is required',
   MESSAGE_PASSWORD_NOT_MATCH: 'Current password does not match',
   MESSAGE_CHANGE_PASSWORD_SUCCESS: 'Change password success',
+  MESSAGE_INVALID_PASSWORD: 'Invalid password',
   MESSAGE_REQUIRED_IMAGE: 'Image is required',
   MESSAGE_ALL_INPUT_REQUIRED: 'All input is required',
   MESSAGE_NOT_FOUND: 'Not found',
