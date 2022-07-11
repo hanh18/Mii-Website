@@ -15,6 +15,9 @@ const arrMessage = {
   MESSAGE_AMOUNT_INVALID: 'Amount invalid',
   MESSAGE_CANNOT_DELETE_PRODUCT: 'There are orders containing products',
 
+  MESSAGE_STATUS_ORDER_INVALID: 'Status invalid',
+  MESSAGE_ORDER_NOT_FOUND: 'Order does not exist',
+
   MESSAGE_ERROR_INTERNAL_SERVER: 'Internal Server Error',
   MESSAGE_INVALID_PHONE: 'Invalid phone',
   MESSAGE_REQUIRED_PASSWORD: 'Password is required',

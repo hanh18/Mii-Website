@@ -6,6 +6,7 @@ import categoryController from '../controller/category.controller';
 import productController from '../controller/product.controller';
 
 import storageCloudinary from '../utils/cloudinary';
+import orderController from '../controller/order.controller';
 
 const router = express.Router();
 
@@ -34,5 +35,10 @@ router.patch('/product/:id/thumbnail', productController.thumbnail);
 router.post('/product/:productId/add-category/:categoryId', productController.addCategory);
 router.put('/product/edit/:id', productController.editProduct);
 router.delete('/product/delete/:id', productController.deleteProduct);
+
+// Route manager product
+router.get('/order', orderController.getOrderPage);
+router.get('/order/:id', orderController.getOrderById);
+router.patch('/order/:id/change-status', orderController.changeStatus);
 
 export default router;
