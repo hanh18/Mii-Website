@@ -6,14 +6,6 @@ import arrMessage from '../utils/message';
 
 const prisma = new PrismaClient();
 
-// const isAuthAdmin = (req, res, next) => {
-//   if (req.session.isAuthAdmin) {
-//     next();
-//   } else {
-//     res.send('login');
-//   }
-// };
-
 const getLoginAdminPage = async (req, res) => {
   try {
     arrResponse.success(res);
