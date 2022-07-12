@@ -4,14 +4,27 @@ import { gql } from 'apollo-server-express';
 const typeDefs = gql`
     type User {
         id: ID!,
+        username: String,
+        password: String,
         email: String,
-        name: String,
+        fullName: String,
+        gender: String,
+        dateOfBirth: String,
+        address: String,
+        phone: String,
+        avatar: String,
+        validToken: String,
+        isActive: Boolean,
+        isBlock: Boolean,
+        createAt: String,
+        updateAt: String
     }
 
     # ROOT TYPE: nơi đặt ra yêu cầu truy xuất dữ liệu
     # book (id: ID!): Book --> tham số
     type Query {
         users: [User]
+        user: User
     }
 
 
@@ -33,10 +46,10 @@ const typeDefs = gql`
         user: User!
     }
 
-    #input
+    #input of login
     input LoginUserInput {
-        email: String!,
-        name: String!
+        username: String!,
+        password: String!
     }
 `;
 

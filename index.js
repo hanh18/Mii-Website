@@ -10,7 +10,7 @@ import session from 'express-session';
 import { PrismaSessionStore } from '@quixo3/prisma-session-store';
 import { PrismaClient } from '@prisma/client';
 
-import mongoDataMethods from './data/query';
+import prismaDataMethods from './data/query';
 
 // Load schema & resolve
 import typeDefs from './schema/schema';
@@ -49,7 +49,7 @@ async function startServer() {
       resolvers,
       context: (request) => ({
         request,
-        mongoDataMethods,
+        prismaDataMethods,
       }),
     });
     await apolloServer.start();
@@ -98,4 +98,5 @@ app.use('/admin', isAuthAdmin, adminRouter);
 const port = 3000;
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);
+  console.log(`Server ready at http://localhost:${port}${apolloServer.graphqlPath}`);
 });

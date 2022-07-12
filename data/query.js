@@ -1,29 +1,52 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
+
+import verifyToken from '../utils/verifyToken';
+import generateToken from '../utils/generateToken';
+import arrMessage from '../utils/message';
 
 const prisma = new PrismaClient();
 
-// const getUserId = require('../utils/getUserId');
-// const generateToken = require('../utils/generateToken');
-
-const mongoDataMethods = {
+const prismaDataMethods = {
   // USER
-  getAllUser: () => prisma.user.findMany(),
-  getUserById: async (id) => prisma.user.findUnique({ where: { id: parseInt(id, 10) } }),
-  // login: async (args) => {
-  //   const user = await prisma.user.findFirst({ where: { email: args.data.email } });
+  getProfileUser: async (args, request) => {
+    try {
+      const id = await verifyToken(request);
 
-  //   if (!user) {
-  //     throw new Error('Unable to login');
-  //   }
+      const user = await prisma.user.findFirst({ where: { id } });
 
-  //   // Check match password and email in here
-  //   // let isMatch
+      return user;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 
-  //   return {
-  //     user,
-  //     token: generateToken(user.id),
-  //   };
-  // },
+  login: async (args) => {
+    try {
+      const { username, password } = args.data;
+      const user = await prisma.user.findFirst({ where: { username } });
+
+      // check exist user
+      if (!user) {
+        throw new Error(arrMessage.MESSAGE_USER_NOT_FOUND);
+      }
+
+      // Check match password in database
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        throw new Error(arrMessage.MESSAGE_SOMETHING_WRONG);
+      }
+
+      const userId = user.id;
+
+      return {
+        user,
+        token: generateToken(userId, '1d'),
+      };
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 };
 
-export default mongoDataMethods;
+export default prismaDataMethods;
