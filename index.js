@@ -19,6 +19,7 @@ import resolvers from './resolver/resolver';
 // Router
 import adminRouter from './routes/admin';
 import authAdminRouter from './routes/auth.admin';
+import authUserRouter from './routes/auth.user';
 
 const app = express();
 // eslint-disable-next-line no-underscore-dangle
@@ -94,6 +95,7 @@ app.get('/', (req, res) => {
 
 app.use('/auth/admin', authAdminRouter);
 app.use('/admin', isAuthAdmin, adminRouter);
+app.use('/auth', authUserRouter);
 
 const port = 3000;
 app.listen(port, () => {

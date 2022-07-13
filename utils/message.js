@@ -1,5 +1,9 @@
 const arrMessage = {
+  // auth
   MESSAGE_TOKEN_EXPIRED: 'Token expired',
+  MESSAGE_REQUIRED_AUTHORIZATION: 'Authorization is require',
+  MESSAGE_ACTIVE_ACCOUNT: 'Please activate your account',
+  MESSAGE_EMAIL_USERNAME_EXISTS: 'Email or username already exists',
 
   MESSAGE_CANNOT_DELETE_USER: 'Can\'t delete user',
   MESSAGE_USER_NOT_FOUND: 'User does not exist',

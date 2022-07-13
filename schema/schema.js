@@ -33,23 +33,37 @@ const typeDefs = gql`
     type Mutation {
         login(
             data: LoginUserInput!
-        ): AuthPayLoad!
+        ) : AuthPayLoad!
         createUser(
-            name: String,
-            email: String
-        ) : AuthPayLoad
+            data: RegisterInput!
+        ) : Token
     }
 
+    #CUSTOMIZE DATATYPE
     #AUTHOR
     type AuthPayLoad {
         token: String!
         user: User!
     }
 
+    #token 
+    type Token {
+        token: String!
+    }
+
+
+    #INPUT
     #input of login
     input LoginUserInput {
         username: String!,
         password: String!
+    }
+
+    #input of register
+    input RegisterInput {
+        username: String!,
+        password: String!,
+        email: String!
     }
 `;
 
