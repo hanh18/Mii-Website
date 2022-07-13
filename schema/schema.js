@@ -37,6 +37,9 @@ const typeDefs = gql`
         createUser(
             data: RegisterInput!
         ) : Token
+        forgotPassword(
+            data: Email!
+        ) : Message
     }
 
     #CUSTOMIZE DATATYPE
@@ -51,6 +54,11 @@ const typeDefs = gql`
         token: String!
     }
 
+    #message
+    type Message {
+        message: String!
+    }
+
 
     #INPUT
     #input of login
@@ -63,6 +71,11 @@ const typeDefs = gql`
     input RegisterInput {
         username: String!,
         password: String!,
+        email: String!
+    }
+
+    #input email
+    input Email {
         email: String!
     }
 `;

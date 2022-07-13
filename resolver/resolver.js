@@ -16,7 +16,8 @@ const resolves = {
   Mutation: {
     // Login
     login: (parent, args, { prismaDataMethods }) => prismaDataMethods.login(args),
-    createUser: async (parent, args, { prismaDataMethods }) => prismaDataMethods.createUser(args),
+    createUser: (parent, args, { prismaDataMethods }) => prismaDataMethods.createUser(args),
+    forgotPassword: (parent, args, { prismaDataMethods }) => prismaDataMethods.forgotPassword(args),
   },
 };
 

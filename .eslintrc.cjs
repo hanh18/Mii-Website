@@ -12,5 +12,6 @@ module.exports = {
   },
   rules: {
     'consistent-return': 0,
+    'linebreak-style': 0,
   },
 };

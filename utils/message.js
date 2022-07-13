@@ -4,6 +4,8 @@ const arrMessage = {
   MESSAGE_REQUIRED_AUTHORIZATION: 'Authorization is require',
   MESSAGE_ACTIVE_ACCOUNT: 'Please activate your account',
   MESSAGE_EMAIL_USERNAME_EXISTS: 'Email or username already exists',
+  MESSAGE_EMAIL_NOT_FOUND: 'User does not exist',
+  MESSAGE_INVALID: 'Invalid password reset request',
 
   MESSAGE_CANNOT_DELETE_USER: 'Can\'t delete user',
   MESSAGE_USER_NOT_FOUND: 'User does not exist',
@@ -26,7 +28,7 @@ const arrMessage = {
   MESSAGE_ERROR_INTERNAL_SERVER: 'Internal Server Error',
   MESSAGE_INVALID_PHONE: 'Invalid phone',
   MESSAGE_REQUIRED_PASSWORD: 'Password is required',
-  MESSAGE_PASSWORD_NOT_MATCH: 'Current password does not match',
+  MESSAGE_PASSWORD_NOT_MATCH: 'New password and confirm password do not match',
   MESSAGE_CHANGE_PASSWORD_SUCCESS: 'Change password success',
   MESSAGE_INVALID_PASSWORD: 'Invalid password',
   MESSAGE_REQUIRED_IMAGE: 'Image is required',

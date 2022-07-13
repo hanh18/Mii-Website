@@ -7,6 +7,7 @@ import arrMessage from '../utils/message';
 import mailOption from '../utils/mailOption';
 import handleSendEmail from '../utils/sendEmail';
 import htmlActiveAccount from '../utils/htmlEmail/verifyAccount';
+import htmlForgotPassword from '../utils/htmlEmail/forgotPassword';
 
 const prisma = new PrismaClient();
 
@@ -77,6 +78,7 @@ const prismaDataMethods = {
     }
   },
 
+  // AUTH
   login: async (args) => {
     try {
       const { username, password } = args.data;
@@ -103,6 +105,45 @@ const prismaDataMethods = {
       return {
         user,
         token: generateToken(userId, '1d'),
+      };
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+  forgotPassword: async (args) => {
+    try {
+      const { email } = args.data;
+
+      // check email exists
+      const user = await prisma.user.findFirst({
+        where: {
+          email,
+        },
+      });
+
+      if (!user) {
+        throw new Error(arrMessage.MESSAGE_EMAIL_NOT_FOUND);
+      }
+
+      const userId = user.id;
+      const token = generateToken(userId, '3m');
+      const subject = 'Generate new password';
+      const html = htmlForgotPassword(email, token);
+
+      // save token in db
+      await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          validToken: token,
+        },
+      });
+
+      handleSendEmail(mailOption(email, subject, html));
+
+      return {
+        message: 'success',
       };
     } catch (error) {
       throw new Error(error);
