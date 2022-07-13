@@ -4,7 +4,7 @@
 const resolves = {
   // QUERY
   Query: {
-    users: async (parent, args, context) => context.mongoDataMethods.getAllUser(),
+    user: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.getProfileUser(args, request),
   },
 
   // User: {
@@ -14,7 +14,10 @@ const resolves = {
 
   // MUTATION
   Mutation: {
-    // createUser: async (parent, args, { mongoDataMethod }) => mongoDataMethods.createUser(args),
+    // Login
+    login: (parent, args, { prismaDataMethods }) => prismaDataMethods.login(args),
+    createUser: (parent, args, { prismaDataMethods }) => prismaDataMethods.createUser(args),
+    forgotPassword: (parent, args, { prismaDataMethods }) => prismaDataMethods.forgotPassword(args),
   },
 };
 

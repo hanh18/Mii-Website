@@ -4,14 +4,27 @@ import { gql } from 'apollo-server-express';
 const typeDefs = gql`
     type User {
         id: ID!,
+        username: String,
+        password: String,
         email: String,
-        name: String,
+        fullName: String,
+        gender: String,
+        dateOfBirth: String,
+        address: String,
+        phone: String,
+        avatar: String,
+        validToken: String,
+        isActive: Boolean,
+        isBlock: Boolean,
+        createAt: String,
+        updateAt: String
     }
 
     # ROOT TYPE: nơi đặt ra yêu cầu truy xuất dữ liệu
     # book (id: ID!): Book --> tham số
     type Query {
         users: [User]
+        user: User
     }
 
 
@@ -20,23 +33,50 @@ const typeDefs = gql`
     type Mutation {
         login(
             data: LoginUserInput!
-        ): AuthPayLoad!
+        ) : AuthPayLoad!
         createUser(
-            name: String,
-            email: String
-        ) : AuthPayLoad
+            data: RegisterInput!
+        ) : Token
+        forgotPassword(
+            data: Email!
+        ) : Message
     }
 
+    #CUSTOMIZE DATATYPE
     #AUTHOR
     type AuthPayLoad {
         token: String!
         user: User!
     }
 
-    #input
+    #token 
+    type Token {
+        token: String!
+    }
+
+    #message
+    type Message {
+        message: String!
+    }
+
+
+    #INPUT
+    #input of login
     input LoginUserInput {
-        email: String!,
-        name: String!
+        username: String!,
+        password: String!
+    }
+
+    #input of register
+    input RegisterInput {
+        username: String!,
+        password: String!,
+        email: String!
+    }
+
+    #input email
+    input Email {
+        email: String!
     }
 `;
 
