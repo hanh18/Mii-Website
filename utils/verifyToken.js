@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+
 import arrMessage from './message';
 
 const verifyToken = (request) => {
@@ -9,13 +10,15 @@ const verifyToken = (request) => {
       throw new Error('Authorization is require');
     }
 
-    const decoded = jwt.verify(token, process.env.SECRET_KEY, async (error) => {
+    const id = jwt.verify(token, process.env.SECRET_KEY, (error, decoded) => {
       if (error) {
-        throw new Error(arrMessage.MESSAGE_TOKEN_EXPIRED);
+        return arrMessage.MESSAGE_TOKEN_EXPIRED;
       }
+
+      return decoded.id;
     });
 
-    return decoded.id;
+    return id;
   } catch (error) {
     throw new Error(error);
   }

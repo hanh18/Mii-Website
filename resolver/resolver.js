@@ -18,6 +18,7 @@ const resolves = {
     login: (parent, args, { prismaDataMethods }) => prismaDataMethods.login(args),
     createUser: (parent, args, { prismaDataMethods }) => prismaDataMethods.createUser(args),
     forgotPassword: (parent, args, { prismaDataMethods }) => prismaDataMethods.forgotPassword(args),
+    editUser: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.editUser(args, request),
   },
 };
 
