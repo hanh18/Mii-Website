@@ -1,9 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import { v2 as cloudinary } from 'cloudinary';
-import streamifier from 'streamifier';
 
 import arrResponse from '../utils/response';
 import arrMessage from '../utils/message';
+import uploadFromBuffers from '../utils/uploadFromBuffer';
+import destroyUploadImage from '../utils/destroyUploadImage';
 
 const prisma = new PrismaClient();
 
@@ -26,27 +27,12 @@ const changeAvata = async (req, res) => {
     }
 
     // upload image
-    const uploadFromBuffer = () => new Promise((resolve, reject) => {
-      const cldUploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: 'Mii',
-        },
-        (error, result) => {
-          if (result) {
-            resolve(result);
-          } else {
-            reject(error);
-          }
-        },
-      );
-      streamifier.createReadStream(req.file.buffer).pipe(cldUploadStream);
-    });
+    const resultUpload = await uploadFromBuffers(req);
 
-    const resultUpload = await uploadFromBuffer();
+    // update user
     const publicId = resultUpload.public_id;
     const avatarPath = resultUpload.url;
 
-    // update user
     // eslint-disable-next-line no-inner-declarations
     async function runUpdate() {
       await prisma.user.update({
@@ -59,20 +45,7 @@ const changeAvata = async (req, res) => {
 
     runUpdate()
       .catch(async (e) => {
-        await cloudinary.uploader.destroy(
-          publicId,
-          {
-            resource_type: 'image',
-            invalidate: true,
-            type: 'upload',
-          },
-          (error, result) => {
-            if (error) {
-              console.log(error);
-            }
-          },
-        );
-
+        destroyUploadImage(publicId);
         throw e;
       });
 
