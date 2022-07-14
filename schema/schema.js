@@ -9,7 +9,7 @@ const typeDefs = gql`
         email: String,
         fullName: String,
         gender: String,
-        dateOfBirth: String,
+        birthday: String,
         address: String,
         phone: String,
         avatar: String,
@@ -23,7 +23,6 @@ const typeDefs = gql`
     # ROOT TYPE: nơi đặt ra yêu cầu truy xuất dữ liệu
     # book (id: ID!): Book --> tham số
     type Query {
-        users: [User]
         user: User
     }
 
@@ -40,6 +39,9 @@ const typeDefs = gql`
         forgotPassword(
             data: Email!
         ) : Message
+        editUser(
+            data: EditUser!
+        ) : User
     }
 
     #CUSTOMIZE DATATYPE
@@ -77,6 +79,16 @@ const typeDefs = gql`
     #input email
     input Email {
         email: String!
+    }
+
+    #input edit user
+    input EditUser {
+        fullName: String,
+        phone: String,
+        birthday: String,
+        gender: String,
+        email: String,
+        address: String
     }
 `;
 

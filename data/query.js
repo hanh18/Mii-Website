@@ -8,6 +8,7 @@ import mailOption from '../utils/mailOption';
 import handleSendEmail from '../utils/sendEmail';
 import htmlActiveAccount from '../utils/htmlEmail/verifyAccount';
 import htmlForgotPassword from '../utils/htmlEmail/forgotPassword';
+import formattedDate from '../utils/formattedDate';
 
 const prisma = new PrismaClient();
 
@@ -17,6 +18,9 @@ const prismaDataMethods = {
     try {
       const id = await verifyToken(request);
 
+      if (id === arrMessage.MESSAGE_TOKEN_EXPIRED) {
+        throw new Error(arrMessage.MESSAGE_PLEASE_LOGIN);
+      }
       const user = await prisma.user.findFirst({ where: { id } });
 
       return user;
@@ -73,6 +77,61 @@ const prismaDataMethods = {
       return {
         token,
       };
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+  editUser: async (args, request) => {
+    try {
+      const id = await verifyToken(request);
+      const { data } = args;
+      console.log(args);
+
+      // check valid token
+      if (id === arrMessage.MESSAGE_TOKEN_EXPIRED) {
+        throw new Error(arrMessage.MESSAGE_PLEASE_LOGIN);
+      }
+
+      // check unique email
+      const user = await prisma.user.findFirst({ where: { id } });
+      const { email } = user;
+
+      if (data.email !== null && data.email !== email) {
+        const isUniqueEmail = await prisma.user.findFirst({ where: { email: data.email } });
+
+        if (isUniqueEmail) {
+          throw new Error(arrMessage.MESSAGE_EMAIL_EXISTS);
+        }
+      }
+
+      // check birthday valid
+      let { birthday } = data;
+
+      if (birthday !== null) {
+        // check full date month year
+        if (!(birthday.length >= 8 && birthday.length <= 10)) {
+          throw new Error(arrMessage.MESSAGE_BIRTHDAY_INVALID);
+        }
+
+        // check data valid
+        birthday = (new Date(birthday)).toString();
+        if (birthday === 'Invalid Date') {
+          throw new Error(arrMessage.MESSAGE_BIRTHDAY_INVALID);
+        }
+
+        birthday = formattedDate(new Date(birthday));
+        data.birthday = birthday;
+      }
+
+      // update user
+      const updateUser = await prisma.user.update({
+        where: {
+          id,
+        },
+        data,
+      });
+
+      return updateUser;
     } catch (error) {
       throw new Error(error);
     }

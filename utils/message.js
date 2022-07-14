@@ -6,6 +6,11 @@ const arrMessage = {
   MESSAGE_EMAIL_USERNAME_EXISTS: 'Email or username already exists',
   MESSAGE_EMAIL_NOT_FOUND: 'User does not exist',
   MESSAGE_INVALID: 'Invalid password reset request',
+  MESSAGE_PLEASE_LOGIN: 'Please login',
+  MESSAGE_EMAIL_EXISTS: 'Email already exists',
+
+  // user
+  MESSAGE_BIRTHDAY_INVALID: 'Birthday invalid',
 
   MESSAGE_CANNOT_DELETE_USER: 'Can\'t delete user',
   MESSAGE_USER_NOT_FOUND: 'User does not exist',
