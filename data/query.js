@@ -85,7 +85,6 @@ const prismaDataMethods = {
     try {
       const id = await verifyToken(request);
       const { data } = args;
-      console.log(args);
 
       // check valid token
       if (id === arrMessage.MESSAGE_TOKEN_EXPIRED) {

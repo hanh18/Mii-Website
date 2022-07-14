@@ -11,6 +11,7 @@ const arrMessage = {
 
   // user
   MESSAGE_BIRTHDAY_INVALID: 'Birthday invalid',
+  MESSAGE_DELETE_IMAGE_ERROR: 'Delete image error',
 
   MESSAGE_CANNOT_DELETE_USER: 'Can\'t delete user',
   MESSAGE_USER_NOT_FOUND: 'User does not exist',
@@ -40,7 +41,6 @@ const arrMessage = {
   MESSAGE_ALL_INPUT_REQUIRED: 'All input is required',
   MESSAGE_NOT_FOUND: 'Not found',
   MESSAGE_INVALID_INFORMATION: 'Invalid infomation',
-  MESSAGE_BIRTHDAY_INVALID: 'Birthday invalid',
   MESSAGE_TIME_INVALID: 'Time invalid',
   MESSAGE_TIME_INVALID_BEFORE_30M: 'Time invalid. Minimum end time 30 minutes from start time !',
   MESSAGE_UPDATE_SUCCESS: 'Update successs',
