@@ -20,10 +20,27 @@ const typeDefs = gql`
         updateAt: String
     }
 
+    type Category {
+        id: ID!
+        name: String,   
+        thumbnail: String
+        description: String
+    }
+
+    type CategoryDetail {
+        id: ID!
+        name: String,   
+        thumbnail: String
+        description: String
+        productQuantity: Int
+    }
+
     # ROOT TYPE: nơi đặt ra yêu cầu truy xuất dữ liệu
     # book (id: ID!): Book --> tham số
     type Query {
         user: User
+        categories (sortName: String, sortProductQuantity: String): [Category]
+        category (ID: Int): CategoryDetail
     }
 
 

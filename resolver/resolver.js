@@ -5,6 +5,8 @@ const resolves = {
   // QUERY
   Query: {
     user: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.getProfileUser(args, request),
+    categories: (parent, args, { prismaDataMethods }) => prismaDataMethods.getCategories(args),
+    category: (parent, { ID }, { prismaDataMethods }) => prismaDataMethods.getCategory(ID),
   },
 
   // User: {

@@ -207,6 +207,86 @@ const prismaDataMethods = {
       throw new Error(error);
     }
   },
+
+  // CATEGORY
+  getCategories: async (args) => {
+    try {
+      const sortAttribute = {
+        name: null,
+        count: null,
+      };
+
+      // get and sort category
+      let getcategories;
+      if (args.sortName && args.sortProductQuantity) {
+        sortAttribute.name = args.sortName;
+        sortAttribute.count = args.sortProductQuantity;
+
+        getcategories = await prisma.category.findMany({
+          orderBy: [
+            {
+              name: sortAttribute.name,
+            },
+            {
+              categoryProduct: {
+                _count: sortAttribute.count,
+              },
+            },
+          ],
+        });
+      } else if (args.sortName) {
+        sortAttribute.name = args.sortName;
+
+        getcategories = await prisma.category.findMany({
+          orderBy: {
+            name: sortAttribute.name,
+          },
+        });
+      } else if (args.sortProductQuantity) {
+        sortAttribute.count = args.sortProductQuantity;
+
+        getcategories = await prisma.category.findMany({
+          orderBy: {
+            categoryProduct: {
+              _count: sortAttribute.count,
+            },
+          },
+        });
+      }
+
+      // filter attribute (get only name and thumbmail from categories)
+      const categories = getcategories.map((category) => {
+        const categoriesChild = {
+          name: category.name,
+          thumbnail: category.thumbnail,
+        };
+
+        return categoriesChild;
+      });
+
+      return categories;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  getCategory: async (ID) => {
+    try {
+      const category = await prisma.category.findFirst({ where: { id: ID } });
+
+      const countProduct = await prisma.categoryProduct.count({
+        where: {
+          categoryId: ID,
+        },
+      });
+
+      category.productQuantity = countProduct;
+
+      return category;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 };
 
 export default prismaDataMethods;
