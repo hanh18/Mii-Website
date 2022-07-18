@@ -102,5 +102,5 @@ app.use('/user', clientRouter);
 const port = 3000;
 app.listen(port, () => {
   console.log(`http://localhost:${port}`);
-  console.log(`Server ready at http://localhost:${port}${apolloServer.graphqlPath}`);
+  // console.log(`Server ready at http://localhost:${port}${apolloServer.graphqlPath}`);
 });
