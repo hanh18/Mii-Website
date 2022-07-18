@@ -7,6 +7,7 @@ const resolves = {
     user: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.getProfileUser(args, request),
     categories: (parent, args, { prismaDataMethods }) => prismaDataMethods.getCategories(args),
     category: (parent, { ID }, { prismaDataMethods }) => prismaDataMethods.getCategory(ID),
+    products: (parent, args, { prismaDataMethods }) => prismaDataMethods.getListProduct(args),
   },
 
   // User: {

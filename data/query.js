@@ -287,6 +287,33 @@ const prismaDataMethods = {
       throw new Error(error);
     }
   },
+
+  getListProduct: async () => {
+    try {
+      const getProducts = await prisma.product.findMany({
+        include: {
+          productImg: {
+            where: {
+              isDefault: true,
+            },
+          },
+        },
+      });
+
+      const products = getProducts.map((product) => {
+        if (product.productImg.length > 0) {
+          // eslint-disable-next-line no-param-reassign
+          product.thumbnail = product.productImg[0].link;
+        }
+
+        return product;
+      });
+
+      return products;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 };
 
 export default prismaDataMethods;
