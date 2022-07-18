@@ -142,7 +142,7 @@ const addCategory = async (req, res) => {
     }
 
     // Check if the product has a category
-    const isCategoryProduct = await prisma.categoryProduct.findFirst({ where: { categoryId } });
+    const isCategoryProduct = await prisma.categoryProduct.findFirst({ where: { categoryId, productId } });
 
     if (!(isCategoryProduct === null)) {
       return arrResponse.badRequest(res, arrMessage.MESSAGE_PRODUCT_CATEGORY_ALREADY_EXISTS);

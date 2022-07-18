@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // parameter of resolve: parent, agrument, context
 // return for schema
 
@@ -8,6 +9,8 @@ const resolves = {
     categories: (parent, args, { prismaDataMethods }) => prismaDataMethods.getCategories(args),
     category: (parent, { ID }, { prismaDataMethods }) => prismaDataMethods.getCategory(ID),
     products: (parent, args, { prismaDataMethods }) => prismaDataMethods.getListProduct(args),
+    productsFilter: (parent, { categoryId }, { prismaDataMethods }) => prismaDataMethods.getProductsFilterByCategory(categoryId),
+    product: (parent, { ID }, { prismaDataMethods }) => prismaDataMethods.getProduct(ID),
   },
 
   // User: {

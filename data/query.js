@@ -288,21 +288,81 @@ const prismaDataMethods = {
     }
   },
 
-  getListProduct: async () => {
+  // Product
+  getListProduct: async (args) => {
     try {
-      const getProducts = await prisma.product.findMany({
-        include: {
-          productImg: {
-            where: {
-              isDefault: true,
+      const sortAttribute = {
+        name: null,
+        price: null,
+      };
+
+      // get and sort product
+      let getProducts;
+      if (args.sortName && args.sortPrice) {
+        sortAttribute.name = args.sortName;
+        sortAttribute.price = args.sortPrice;
+
+        getProducts = await prisma.product.findMany({
+          include: {
+            productImg: {
+              where: {
+                isDefault: true,
+              },
             },
           },
-        },
-      });
+          orderBy: [
+            {
+              name: sortAttribute.name,
+            },
+            {
+              price: sortAttribute.price,
+            },
+          ],
+        });
+      } else if (args.sortName) {
+        sortAttribute.name = args.sortName;
+
+        getProducts = await prisma.product.findMany({
+          include: {
+            productImg: {
+              where: {
+                isDefault: true,
+              },
+            },
+          },
+          orderBy: {
+            name: sortAttribute.name,
+          },
+        });
+      } else if (args.sortPrice) {
+        sortAttribute.price = args.sortPrice;
+
+        getProducts = await prisma.product.findMany({
+          include: {
+            productImg: {
+              where: {
+                isDefault: true,
+              },
+            },
+          },
+          orderBy: {
+            price: sortAttribute.price,
+          },
+        });
+      } else {
+        getProducts = await prisma.product.findMany({
+          include: {
+            productImg: {
+              where: {
+                isDefault: true,
+              },
+            },
+          },
+        });
+      }
 
       const products = getProducts.map((product) => {
         if (product.productImg.length > 0) {
-          // eslint-disable-next-line no-param-reassign
           product.thumbnail = product.productImg[0].link;
         }
 
@@ -310,6 +370,62 @@ const prismaDataMethods = {
       });
 
       return products;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  getProductsFilterByCategory: async (categoryId) => {
+    try {
+      // get all product have categoryId
+      const productsByCategory = await prisma.category.findFirst({
+        where: {
+          id: categoryId,
+        },
+        include: {
+          categoryProduct: {
+            include: {
+              product: {
+                include: {
+                  productImg: {
+                    where: {
+                      isDefault: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // get thumbnail of product
+      const products = productsByCategory.categoryProduct.map((item) => {
+        if (item.product.productImg.length > 0) {
+          item.product.thumbnail = item.product.productImg[0].link;
+        }
+
+        return item.product;
+      });
+
+      return products;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  getProduct: async (ID) => {
+    try {
+      const product = await prisma.product.findFirst({
+        where: {
+          id: ID,
+        },
+        include: {
+          productImg: true,
+        },
+      });
+
+      return product;
     } catch (error) {
       throw new Error(error);
     }

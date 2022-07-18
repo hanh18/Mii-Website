@@ -42,13 +42,27 @@ const typeDefs = gql`
         thumbnail: String
     }
 
+    type ProductDetail {
+        id: ID!
+        name: String
+        price: String
+        amount: Int
+        productImg: [ImageProduct]
+    }
+
+    type ImageProduct {
+        link: String!
+    }
+
     # ROOT TYPE: nơi đặt ra yêu cầu truy xuất dữ liệu
     # book (id: ID!): Book --> tham số
     type Query {
         user: User
         categories (sortName: String, sortProductQuantity: String): [Category]
         category (ID: Int): CategoryDetail
-        products (sortName: String, sortPrice: String, filter: Boolean): [Product]
+        products (sortName: String, sortPrice: String): [Product]
+        productsFilter (categoryId: Int): [Product]
+        product (ID: Int): ProductDetail
     }
 
 
