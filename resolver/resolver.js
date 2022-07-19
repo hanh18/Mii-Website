@@ -30,6 +30,7 @@ const resolves = {
 
     // Add product to cart
     addToCart: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.addToCart(request),
+    removeItemInCart: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.removeProductInCart(args, request),
   },
 };
 

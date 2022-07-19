@@ -585,6 +585,63 @@ const prismaDataMethods = {
       throw new Error(error);
     }
   },
+
+  removeProductInCart: async (agrs, request) => {
+    try {
+      const message = 'delete success';
+      const productId = parseInt(agrs.data.productId, 10);
+      // get id user
+      const userId = await verifyToken(request);
+
+      // check token exprired
+      if (userId === arrMessage.MESSAGE_TOKEN_EXPIRED) {
+        throw new Error(arrMessage.MESSAGE_PLEASE_LOGIN);
+      }
+
+      // check exist product
+      const isProduct = await prisma.product.findFirst({
+        where: {
+          id: productId,
+        },
+      });
+
+      // get cart of user
+      const cart = await prisma.cart.findFirst({
+        where: {
+          userId,
+        },
+      });
+
+      // get cart id
+      const cartId = cart.id;
+
+      // check product in cart
+      const isProductInCart = await prisma.cartProduct.findFirst({
+        where: {
+          cartId,
+          productId,
+        },
+      });
+
+      if (!(isProduct && isProductInCart)) {
+        throw new Error(arrMessage.MESSAGE_PRODUCT_NOT_FOUND);
+      }
+
+      // get id product in cart
+      const cartProductId = isProductInCart.id;
+
+      // delete cart product by id
+      await prisma.cartProduct.delete({
+        where: {
+          id: cartProductId,
+        },
+      });
+
+      return { message };
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 };
 
 export default prismaDataMethods;

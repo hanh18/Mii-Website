@@ -103,7 +103,10 @@ const typeDefs = gql`
             data: EditUser!
         ) : User
         addToCart(
-            data: AddToCart!
+            data: ProductId!
+        ) : Message
+        removeItemInCart(
+            data: ProductId!
         ) : Message
     }
 
@@ -155,7 +158,7 @@ const typeDefs = gql`
     }
 
     #input add to cart
-    input AddToCart {
+    input ProductId {
         productId: ID,
     }
 `;
