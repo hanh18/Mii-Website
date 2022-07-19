@@ -11,6 +11,8 @@ const resolves = {
     products: (parent, args, { prismaDataMethods }) => prismaDataMethods.getListProduct(args),
     productsFilter: (parent, { categoryId }, { prismaDataMethods }) => prismaDataMethods.getProductsFilterByCategory(categoryId),
     product: (parent, { ID }, { prismaDataMethods }) => prismaDataMethods.getProduct(ID),
+    cart: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.getCart(request),
+    itemsInCart: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.getItemsInCart(request),
   },
 
   // User: {
@@ -27,7 +29,7 @@ const resolves = {
     editUser: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.editUser(args, request),
 
     // Add product to cart
-    addToCart: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.addToCart(args, request),
+    addToCart: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.addToCart(request),
   },
 };
 

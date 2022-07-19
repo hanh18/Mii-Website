@@ -54,6 +54,25 @@ const typeDefs = gql`
         link: String!
     }
 
+    type Cart {
+        id: ID!
+        cartProduct: [CartProduct]
+    }
+
+    type CartProduct {
+        id: ID!
+        quantity: Int
+        cartId: Int
+        productId: Int
+    }
+
+    type ItemInCart {
+        name: String
+        thumbnail: String
+        quantity: Int
+        price: String
+    }
+
     # ROOT TYPE: nơi đặt ra yêu cầu truy xuất dữ liệu
     # book (id: ID!): Book --> tham số
     type Query {
@@ -63,6 +82,8 @@ const typeDefs = gql`
         products (sortName: String, sortPrice: String): [Product]
         productsFilter (categoryId: Int): [Product]
         product (ID: Int): ProductDetail
+        cart: Cart
+        itemsInCart: [ItemInCart]
     }
 
 

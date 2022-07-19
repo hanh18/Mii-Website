@@ -508,6 +508,83 @@ const prismaDataMethods = {
       throw new Error(error);
     }
   },
+
+  // CART
+  getCart: async (request) => {
+    try {
+      // get id user
+      const userId = await verifyToken(request);
+
+      // check token exprired
+      if (userId === arrMessage.MESSAGE_TOKEN_EXPIRED) {
+        throw new Error(arrMessage.MESSAGE_PLEASE_LOGIN);
+      }
+
+      // find cart of user
+      const cart = await prisma.cart.findFirst({
+        where: {
+          userId,
+        },
+        include: {
+          cartProduct: true,
+        },
+      });
+
+      return cart;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  getItemsInCart: async (request) => {
+    try {
+      // get id user
+      const userId = await verifyToken(request);
+
+      // check token exprired
+      if (userId === arrMessage.MESSAGE_TOKEN_EXPIRED) {
+        throw new Error(arrMessage.MESSAGE_PLEASE_LOGIN);
+      }
+
+      // find cart of user
+      const cart = await prisma.cart.findFirst({
+        where: {
+          userId,
+        },
+        include: {
+          cartProduct: {
+            include: {
+              product: {
+                include: {
+                  productImg: {
+                    where: {
+                      isDefault: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // filter attribute of product
+      const productInCart = cart.cartProduct.map((item) => {
+        const product = {
+          name: item.product.name,
+          price: item.product.price,
+          thumbnail: item.product.productImg[0].link,
+          quantity: item.quantity,
+        };
+
+        return product;
+      });
+
+      return productInCart;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
 };
 
 export default prismaDataMethods;
