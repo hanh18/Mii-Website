@@ -108,6 +108,12 @@ const typeDefs = gql`
         removeItemInCart(
             data: ProductId!
         ) : Message
+        increaseQuantityProductInCart(
+            data: ProductId!
+        ) : Message
+        reduceQuantityProductInCart(
+            data: ProductId!
+        ) : Message
     }
 
     #CUSTOMIZE DATATYPE

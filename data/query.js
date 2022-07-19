@@ -435,7 +435,7 @@ const prismaDataMethods = {
     try {
       // variable quantity
       let quantity = 1;
-      const message = 'ok';
+      const message = arrMessage.MESSAGE_UPDATE_SUCCESS;
 
       // get id product
       const productId = parseInt(args.data.productId, 10);
@@ -588,7 +588,7 @@ const prismaDataMethods = {
 
   removeProductInCart: async (agrs, request) => {
     try {
-      const message = 'delete success';
+      const message = arrMessage.MESSAGE_DELETE_SUCCESS;
       const productId = parseInt(agrs.data.productId, 10);
       // get id user
       const userId = await verifyToken(request);
@@ -634,6 +634,132 @@ const prismaDataMethods = {
       await prisma.cartProduct.delete({
         where: {
           id: cartProductId,
+        },
+      });
+
+      return { message };
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  increaseQuantityProductInCart: async (agrs, request) => {
+    try {
+      const message = arrMessage.MESSAGE_UPDATE_SUCCESS;
+      const productId = parseInt(agrs.data.productId, 10);
+      // get id user
+      const userId = await verifyToken(request);
+
+      // check token exprired
+      if (userId === arrMessage.MESSAGE_TOKEN_EXPIRED) {
+        throw new Error(arrMessage.MESSAGE_PLEASE_LOGIN);
+      }
+
+      // check exist product and check product in cart
+      const isProduct = await prisma.product.findFirst({
+        where: {
+          id: productId,
+        },
+      });
+
+      // get cart of user
+      const cart = await prisma.cart.findFirst({
+        where: {
+          userId,
+        },
+      });
+
+      // get cart id
+      const cartId = cart.id;
+
+      const isProductInCart = await prisma.cartProduct.findFirst({
+        where: {
+          cartId,
+          productId,
+        },
+      });
+
+      if (!(isProduct && isProductInCart)) {
+        throw new Error(arrMessage.MESSAGE_PRODUCT_NOT_FOUND);
+      }
+
+      // get id product in cart
+      const cartProductId = isProductInCart.id;
+      const { quantity } = isProductInCart;
+
+      // increase quantity product
+      await prisma.cartProduct.update({
+        where: {
+          id: cartProductId,
+        },
+        data: {
+          quantity: quantity + 1,
+        },
+      });
+
+      return { message };
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  reduceQuantityProductInCart: async (agrs, request) => {
+    try {
+      const message = arrMessage.MESSAGE_UPDATE_SUCCESS;
+      const productId = parseInt(agrs.data.productId, 10);
+      // get id user
+      const userId = await verifyToken(request);
+
+      // check token exprired
+      if (userId === arrMessage.MESSAGE_TOKEN_EXPIRED) {
+        throw new Error(arrMessage.MESSAGE_PLEASE_LOGIN);
+      }
+
+      // check exist product and check product in cart
+      const isProduct = await prisma.product.findFirst({
+        where: {
+          id: productId,
+        },
+      });
+
+      // get cart of user
+      const cart = await prisma.cart.findFirst({
+        where: {
+          userId,
+        },
+      });
+
+      // get cart id
+      const cartId = cart.id;
+
+      const isProductInCart = await prisma.cartProduct.findFirst({
+        where: {
+          cartId,
+          productId,
+        },
+      });
+
+      if (!(isProduct && isProductInCart)) {
+        throw new Error(arrMessage.MESSAGE_PRODUCT_NOT_FOUND);
+      }
+
+      // get id product in cart
+      const cartProductId = isProductInCart.id;
+      let { quantity } = isProductInCart;
+
+      // check quantity of product (if quantity != 1 -> update)
+      if (quantity === 1) {
+        return { message };
+      }
+      quantity -= 1;
+
+      // increase quantity product
+      await prisma.cartProduct.update({
+        where: {
+          id: cartProductId,
+        },
+        data: {
+          quantity,
         },
       });
 

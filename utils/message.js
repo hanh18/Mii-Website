@@ -13,15 +13,16 @@ const arrMessage = {
   // user
   MESSAGE_BIRTHDAY_INVALID: 'Birthday invalid',
   MESSAGE_DELETE_IMAGE_ERROR: 'Delete image error',
-
   MESSAGE_CANNOT_DELETE_USER: 'Can\'t delete user',
   MESSAGE_USER_NOT_FOUND: 'User does not exist',
   MESSAGE_ADMIN_NOT_FOUND: 'Admin does not exist',
 
+  // category
   MESSAGE_CATEGORY_NOT_FOUND: 'Category does not exist',
   MESSAGE_REQUIRED_NAME_CATEGORY: 'Category name is require',
   MESSAGE_CANNNOT_DELETE_CATEGORY: 'There are products in this category',
 
+  // product
   MESSAGE_PRODUCT_NOT_FOUND: 'Product does not exist',
   MESSAGE_IMAGE_NOT_FOUND: 'Image does not exist',
   MESSAGE_PRODUCT_CATEGORY_NOT_FOUND: 'Category or product do not exist',
@@ -29,6 +30,7 @@ const arrMessage = {
   MESSAGE_AMOUNT_INVALID: 'Amount invalid',
   MESSAGE_CANNOT_DELETE_PRODUCT: 'There are orders containing products',
 
+  // order
   MESSAGE_STATUS_ORDER_INVALID: 'Status invalid',
   MESSAGE_ORDER_NOT_FOUND: 'Order does not exist',
 
@@ -44,7 +46,6 @@ const arrMessage = {
   MESSAGE_INVALID_INFORMATION: 'Invalid infomation',
   MESSAGE_TIME_INVALID: 'Time invalid',
   MESSAGE_TIME_INVALID_BEFORE_30M: 'Time invalid. Minimum end time 30 minutes from start time !',
-  MESSAGE_UPDATE_SUCCESS: 'Update successs',
 
   MESSAGE_EMAIL_NOT_REGISTERED: 'The Email is not registered with us',
   MESSAGE_SENT_EMAIL: 'The verification link has been sent to your email address',
@@ -53,6 +54,11 @@ const arrMessage = {
   MESSAGE_USER_EXIST: 'User Already Exist. Please Login',
 
   MESSAGE_STATUS_NOT_FOUND: 'Status not found',
+
+  // return
+  MESSAGE_UPDATE_SUCCESS: 'Update successs',
+  MESSAGE_DELETE_SUCCESS: 'Delete success',
+  MESSAGE_CREATE_SUCCESS: 'Create success',
 };
 
 export default arrMessage;
