@@ -25,6 +25,9 @@ const resolves = {
     createUser: (parent, args, { prismaDataMethods }) => prismaDataMethods.createUser(args),
     forgotPassword: (parent, args, { prismaDataMethods }) => prismaDataMethods.forgotPassword(args),
     editUser: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.editUser(args, request),
+
+    // Add product to cart
+    addToCart: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.addToCart(args, request),
   },
 };
 

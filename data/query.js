@@ -155,7 +155,7 @@ const prismaDataMethods = {
       // Check match password in database
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        throw new Error(arrMessage.MESSAGE_SOMETHING_WRONG);
+        throw new Error(arrMessage.MESSAGE_LOGIN_FAILED);
       }
 
       const userId = user.id;
@@ -426,6 +426,84 @@ const prismaDataMethods = {
       });
 
       return product;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  addToCart: async (args, request) => {
+    try {
+      // variable quantity
+      let quantity = 1;
+      const message = 'ok';
+
+      // get id product
+      const productId = parseInt(args.data.productId, 10);
+
+      // get id user
+      const userId = await verifyToken(request);
+
+      // check token exprired
+      if (userId === arrMessage.MESSAGE_TOKEN_EXPIRED) {
+        throw new Error(arrMessage.MESSAGE_PLEASE_LOGIN);
+      }
+
+      // check exist product
+      const isProduct = await prisma.product.findFirst({
+        where: {
+          id: productId,
+        },
+      });
+
+      if (!isProduct) {
+        throw new Error(arrMessage.MESSAGE_PRODUCT_NOT_FOUND);
+      }
+
+      // get cart of user
+      const cart = await prisma.cart.findFirst({
+        where: {
+          userId,
+        },
+      });
+
+      // get cart id
+      const cartId = cart.id;
+
+      // check product in cart
+      const isProductInCart = await prisma.cartProduct.findFirst({
+        where: {
+          cartId,
+          productId,
+        },
+      });
+
+      if (isProductInCart) {
+        quantity = isProductInCart.quantity + 1;
+
+        // update quantity product in cart
+        await prisma.cartProduct.updateMany({
+          where: {
+            cartId,
+            productId,
+          },
+          data: {
+            quantity,
+          },
+        });
+
+        return { message };
+      }
+
+      // add product into cart on database
+      await prisma.cartProduct.create({
+        data: {
+          quantity,
+          productId,
+          cartId,
+        },
+      });
+
+      return { message };
     } catch (error) {
       throw new Error(error);
     }

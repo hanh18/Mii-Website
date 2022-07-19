@@ -8,6 +8,7 @@ const arrMessage = {
   MESSAGE_INVALID: 'Invalid password reset request',
   MESSAGE_PLEASE_LOGIN: 'Please login',
   MESSAGE_EMAIL_EXISTS: 'Email already exists',
+  MESSAGE_LOGIN_FAILED: 'Username and password are incorrect',
 
   // user
   MESSAGE_BIRTHDAY_INVALID: 'Birthday invalid',

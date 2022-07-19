@@ -81,6 +81,9 @@ const typeDefs = gql`
         editUser(
             data: EditUser!
         ) : User
+        addToCart(
+            data: AddToCart!
+        ) : Message
     }
 
     #CUSTOMIZE DATATYPE
@@ -128,6 +131,11 @@ const typeDefs = gql`
         gender: String,
         email: String,
         address: String
+    }
+
+    #input add to cart
+    input AddToCart {
+        productId: ID,
     }
 `;
 
