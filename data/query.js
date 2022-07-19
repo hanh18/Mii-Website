@@ -155,7 +155,7 @@ const prismaDataMethods = {
       // Check match password in database
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        throw new Error(arrMessage.MESSAGE_SOMETHING_WRONG);
+        throw new Error(arrMessage.MESSAGE_LOGIN_FAILED);
       }
 
       const userId = user.id;
@@ -283,6 +283,227 @@ const prismaDataMethods = {
       category.productQuantity = countProduct;
 
       return category;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  // Product
+  getListProduct: async (args) => {
+    try {
+      const sortAttribute = {
+        name: null,
+        price: null,
+      };
+
+      // get and sort product
+      let getProducts;
+      if (args.sortName && args.sortPrice) {
+        sortAttribute.name = args.sortName;
+        sortAttribute.price = args.sortPrice;
+
+        getProducts = await prisma.product.findMany({
+          include: {
+            productImg: {
+              where: {
+                isDefault: true,
+              },
+            },
+          },
+          orderBy: [
+            {
+              name: sortAttribute.name,
+            },
+            {
+              price: sortAttribute.price,
+            },
+          ],
+        });
+      } else if (args.sortName) {
+        sortAttribute.name = args.sortName;
+
+        getProducts = await prisma.product.findMany({
+          include: {
+            productImg: {
+              where: {
+                isDefault: true,
+              },
+            },
+          },
+          orderBy: {
+            name: sortAttribute.name,
+          },
+        });
+      } else if (args.sortPrice) {
+        sortAttribute.price = args.sortPrice;
+
+        getProducts = await prisma.product.findMany({
+          include: {
+            productImg: {
+              where: {
+                isDefault: true,
+              },
+            },
+          },
+          orderBy: {
+            price: sortAttribute.price,
+          },
+        });
+      } else {
+        getProducts = await prisma.product.findMany({
+          include: {
+            productImg: {
+              where: {
+                isDefault: true,
+              },
+            },
+          },
+        });
+      }
+
+      const products = getProducts.map((product) => {
+        if (product.productImg.length > 0) {
+          product.thumbnail = product.productImg[0].link;
+        }
+
+        return product;
+      });
+
+      return products;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  getProductsFilterByCategory: async (categoryId) => {
+    try {
+      // get all product have categoryId
+      const productsByCategory = await prisma.category.findFirst({
+        where: {
+          id: categoryId,
+        },
+        include: {
+          categoryProduct: {
+            include: {
+              product: {
+                include: {
+                  productImg: {
+                    where: {
+                      isDefault: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // get thumbnail of product
+      const products = productsByCategory.categoryProduct.map((item) => {
+        if (item.product.productImg.length > 0) {
+          item.product.thumbnail = item.product.productImg[0].link;
+        }
+
+        return item.product;
+      });
+
+      return products;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  getProduct: async (ID) => {
+    try {
+      const product = await prisma.product.findFirst({
+        where: {
+          id: ID,
+        },
+        include: {
+          productImg: true,
+        },
+      });
+
+      return product;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  addToCart: async (args, request) => {
+    try {
+      // variable quantity
+      let quantity = 1;
+      const message = 'ok';
+
+      // get id product
+      const productId = parseInt(args.data.productId, 10);
+
+      // get id user
+      const userId = await verifyToken(request);
+
+      // check token exprired
+      if (userId === arrMessage.MESSAGE_TOKEN_EXPIRED) {
+        throw new Error(arrMessage.MESSAGE_PLEASE_LOGIN);
+      }
+
+      // check exist product
+      const isProduct = await prisma.product.findFirst({
+        where: {
+          id: productId,
+        },
+      });
+
+      if (!isProduct) {
+        throw new Error(arrMessage.MESSAGE_PRODUCT_NOT_FOUND);
+      }
+
+      // get cart of user
+      const cart = await prisma.cart.findFirst({
+        where: {
+          userId,
+        },
+      });
+
+      // get cart id
+      const cartId = cart.id;
+
+      // check product in cart
+      const isProductInCart = await prisma.cartProduct.findFirst({
+        where: {
+          cartId,
+          productId,
+        },
+      });
+
+      if (isProductInCart) {
+        quantity = isProductInCart.quantity + 1;
+
+        // update quantity product in cart
+        await prisma.cartProduct.updateMany({
+          where: {
+            cartId,
+            productId,
+          },
+          data: {
+            quantity,
+          },
+        });
+
+        return { message };
+      }
+
+      // add product into cart on database
+      await prisma.cartProduct.create({
+        data: {
+          quantity,
+          productId,
+          cartId,
+        },
+      });
+
+      return { message };
     } catch (error) {
       throw new Error(error);
     }

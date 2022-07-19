@@ -35,12 +35,34 @@ const typeDefs = gql`
         productQuantity: Int
     }
 
+    type Product {
+        id: ID!
+        name: String
+        price: String
+        thumbnail: String
+    }
+
+    type ProductDetail {
+        id: ID!
+        name: String
+        price: String
+        amount: Int
+        productImg: [ImageProduct]
+    }
+
+    type ImageProduct {
+        link: String!
+    }
+
     # ROOT TYPE: nơi đặt ra yêu cầu truy xuất dữ liệu
     # book (id: ID!): Book --> tham số
     type Query {
         user: User
         categories (sortName: String, sortProductQuantity: String): [Category]
         category (ID: Int): CategoryDetail
+        products (sortName: String, sortPrice: String): [Product]
+        productsFilter (categoryId: Int): [Product]
+        product (ID: Int): ProductDetail
     }
 
 
@@ -59,6 +81,9 @@ const typeDefs = gql`
         editUser(
             data: EditUser!
         ) : User
+        addToCart(
+            data: AddToCart!
+        ) : Message
     }
 
     #CUSTOMIZE DATATYPE
@@ -106,6 +131,11 @@ const typeDefs = gql`
         gender: String,
         email: String,
         address: String
+    }
+
+    #input add to cart
+    input AddToCart {
+        productId: ID,
     }
 `;
 
