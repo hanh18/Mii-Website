@@ -9,8 +9,11 @@ import handleSendEmail from '../utils/sendEmail';
 import htmlActiveAccount from '../utils/htmlEmail/verifyAccount';
 import htmlForgotPassword from '../utils/htmlEmail/forgotPassword';
 import formattedDate from '../utils/formattedDate';
+import { statusOrder, paymentMethods } from '../utils/statusOrder';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  log: ['query', 'info', 'warn', 'error'],
+});
 
 const prismaDataMethods = {
   // USER
@@ -762,6 +765,179 @@ const prismaDataMethods = {
           quantity,
         },
       });
+
+      return { message };
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  checkoutProduct: async (agrs, request) => {
+    try {
+      const message = arrMessage.MESSAGE_CREATE_SUCCESS;
+      const listProductId = agrs.data;
+      const { paymentMethod } = agrs;
+      let paymentDate = null;
+      let status = statusOrder.pending;
+
+      // get id user
+      const userId = await verifyToken(request);
+
+      // check token exprired
+      if (userId === arrMessage.MESSAGE_TOKEN_EXPIRED) {
+        throw new Error(arrMessage.MESSAGE_PLEASE_LOGIN);
+      }
+
+      // conver product id from string to int
+      let listId = listProductId.map((item) => ({ id: parseInt(item.productId, 10) }));
+
+      // check exist products in database
+      const isProducts = await prisma.product.findMany({
+        where: {
+          OR: listId,
+        },
+      });
+
+      if (listProductId.length !== isProducts.length) {
+        return { message: arrMessage.MESSAGE_PRODUCT_NOT_FOUND };
+      }
+
+      // check exist products in cart
+      // get cart of user
+      const cart = await prisma.cart.findFirst({
+        where: {
+          userId,
+        },
+      });
+
+      // get cart id
+      const cartId = cart.id;
+
+      // get list product id
+      listId = listProductId.map((item) => ({ productId: parseInt(item.productId, 10), cartId }));
+
+      // get product in cart
+      const productsInCart = await prisma.cartProduct.findMany({
+        where: {
+          OR: listId,
+        },
+      });
+
+      // check lại
+      if (listProductId.length !== productsInCart.length) {
+        return { message: arrMessage.MESSAGE_PRODUCT_NOT_FOUND_IN_CART };
+      }
+
+      // check method payment
+      if (!(paymentMethod in paymentMethods)) {
+        return { message: arrMessage.MESSAGE_PAYMENT_METHOD_NOT_FOUND };
+      }
+
+      // if method payment = visa -> payment date = now
+      if (paymentMethod === paymentMethods.visa) {
+        paymentDate = new Date(Date.now());
+        status = statusOrder.completed;
+      }
+
+      // create order
+      // const createOrder = await prisma.order.create({
+      //   data: {
+      //     userId,
+      //     status: statusOrder.pending,
+      //     paymentMethod,
+      //     paymentDate,
+      //   },
+      // });
+
+      // // create order product
+      // // convert data to order product
+      // // sort product
+      // productsInCart.sort((a, b) => a.productId - b.productId);
+
+      // const dataOrderProduct = productsInCart.map((item, index) => {
+      //   const order = {
+      //     productId: item.productId,
+      //     quantity: item.quantity,
+      //     price: isProducts[index].price,
+      //     orderId: createOrder.id,
+      //   };
+
+      //   return order;
+      // });
+
+      // console.log(dataOrderProduct);
+
+      // const createOrderProduct = prisma.orderProduct.createMany({
+      //   data: dataOrderProduct,
+      // });
+
+      // const deleteCartProduct = prisma.cartProduct.deleteMany({
+      //   where: {
+      //     OR: listId,
+      //   },
+      // });
+
+      // const run = [createOrderProduct, deleteCartProduct];
+      // await prisma.$transaction(run);
+
+      const result = await prisma.$transaction(async (Model) => {
+        // create order
+        const createOrder = await Model.order.create({
+          data: {
+            userId,
+            status,
+            paymentMethod,
+            paymentDate,
+          },
+        });
+
+        // create order product
+        // convert data to order product
+        // sort product
+        productsInCart.sort((a, b) => a.productId - b.productId);
+
+        const dataOrderProduct = productsInCart.map((item, index) => {
+          const order = {
+            productId: item.productId,
+            quantity: item.quantity,
+            price: isProducts[index].price,
+            orderId: createOrder.id,
+          };
+
+          return order;
+        });
+
+        const createOrderProduct = await Model.orderProduct.createMany({
+          data: dataOrderProduct,
+        });
+
+        const deleteCartProduct = await Model.cartProduct.deleteMany({
+          where: {
+            OR: listId,
+          },
+        });
+
+        return { createOrder, createOrderProduct, deleteCartProduct };
+      });
+
+      console.log(result);
+
+      // console.log(isProducts);
+      // console.log(productsInCart);
+
+      // await prisma.$transaction([
+      //   // create order
+      //   // -- add payment
+      //   prisma.order.create({
+      //     data: {
+      //       userId,
+      //       status: statusOrder.pending,
+      //       paymentMethod,
+      //       paymentDate,
+      //     },
+      //   }),
+      //   prisma.orderProduct.createMany
+      // ]);
 
       return { message };
     } catch (error) {

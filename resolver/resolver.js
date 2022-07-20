@@ -29,10 +29,11 @@ const resolves = {
     editUser: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.editUser(args, request),
 
     // Add product to cart
-    addToCart: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.addToCart(request),
+    addToCart: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.addToCart(args, request),
     removeItemInCart: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.removeProductInCart(args, request),
     increaseQuantityProductInCart: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.increaseQuantityProductInCart(args, request),
     reduceQuantityProductInCart: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.reduceQuantityProductInCart(args, request),
+    checkoutProduct: (parent, args, { prismaDataMethods, request }) => prismaDataMethods.checkoutProduct(args, request),
   },
 };
 

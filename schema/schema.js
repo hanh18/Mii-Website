@@ -114,6 +114,10 @@ const typeDefs = gql`
         reduceQuantityProductInCart(
             data: ProductId!
         ) : Message
+        checkoutProduct(
+            data: [ProductId]!
+            paymentMethod: String
+        ) : Message
     }
 
     #CUSTOMIZE DATATYPE
