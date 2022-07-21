@@ -35,6 +35,10 @@ const arrMessage = {
   MESSAGE_ORDER_NOT_FOUND: 'Order does not exist',
   MESSAGE_PRODUCT_NOT_FOUND_IN_CART: 'Product not found in cart',
   MESSAGE_PAYMENT_METHOD_NOT_FOUND: 'Payment method does not exist',
+  MESSAGE_NOT_ENOUGH_PRODUCT: 'Not enough products',
+  MESSAGE_OUT_OF_STOCK: 'Out of stock',
+  MESSAGE_ADD_PRODUCT_SUCCESS: 'Add product success',
+  MESSAGE_CHECKOUT_SUCCESS: 'Checkout success',
 
   MESSAGE_ERROR_INTERNAL_SERVER: 'Internal Server Error',
   MESSAGE_INVALID_PHONE: 'Invalid phone',

@@ -10,6 +10,7 @@ import htmlActiveAccount from '../utils/htmlEmail/verifyAccount';
 import htmlForgotPassword from '../utils/htmlEmail/forgotPassword';
 import formattedDate from '../utils/formattedDate';
 import { statusOrder, paymentMethods } from '../utils/statusOrder';
+import helper from '../utils/helper';
 
 const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
@@ -438,7 +439,7 @@ const prismaDataMethods = {
     try {
       // variable quantity
       let quantity = 1;
-      const message = arrMessage.MESSAGE_UPDATE_SUCCESS;
+      const message = arrMessage.MESSAGE_ADD_PRODUCT_SUCCESS;
 
       // get id product
       const productId = parseInt(args.data.productId, 10);
@@ -480,8 +481,20 @@ const prismaDataMethods = {
         },
       });
 
+      // check amount product in stocks
+      const { amount } = isProduct;
+
+      if (amount === 0) {
+        return { message: arrMessage.MESSAGE_OUT_OF_STOCK };
+      }
+
       if (isProductInCart) {
+        // check quantity product in cart <= amount product in stocks
         quantity = isProductInCart.quantity + 1;
+
+        if (amount - quantity < 0) {
+          return { message: arrMessage.MESSAGE_NOT_ENOUGH_PRODUCT };
+        }
 
         // update quantity product in cart
         await prisma.cartProduct.updateMany({
@@ -688,7 +701,14 @@ const prismaDataMethods = {
 
       // get id product in cart
       const cartProductId = isProductInCart.id;
-      const { quantity } = isProductInCart;
+      let { quantity } = isProductInCart;
+      quantity += 1;
+      const { amount } = isProduct;
+
+      // check quantity in cart <= amount products in stocks
+      if (amount - quantity < 0) {
+        return { message: arrMessage.MESSAGE_NOT_ENOUGH_PRODUCT };
+      }
 
       // increase quantity product
       await prisma.cartProduct.update({
@@ -696,7 +716,7 @@ const prismaDataMethods = {
           id: cartProductId,
         },
         data: {
-          quantity: quantity + 1,
+          quantity,
         },
       });
 
@@ -774,7 +794,7 @@ const prismaDataMethods = {
 
   checkoutProduct: async (agrs, request) => {
     try {
-      const message = arrMessage.MESSAGE_CREATE_SUCCESS;
+      const message = arrMessage.MESSAGE_CHECKOUT_SUCCESS;
       const listProductId = agrs.data;
       const { paymentMethod } = agrs;
       let paymentDate = null;
@@ -789,7 +809,7 @@ const prismaDataMethods = {
       }
 
       // conver product id from string to int
-      let listId = listProductId.map((item) => ({ id: parseInt(item.productId, 10) }));
+      const listId = listProductId.map((item) => ({ id: parseInt(item.productId, 10) }));
 
       // check exist products in database
       const isProducts = await prisma.product.findMany({
@@ -814,18 +834,30 @@ const prismaDataMethods = {
       const cartId = cart.id;
 
       // get list product id
-      listId = listProductId.map((item) => ({ productId: parseInt(item.productId, 10), cartId }));
+      const listProductIdInCart = listProductId.map((item) => ({
+        productId: parseInt(item.productId, 10), cartId,
+      }));
 
       // get product in cart
       const productsInCart = await prisma.cartProduct.findMany({
         where: {
-          OR: listId,
+          OR: listProductIdInCart,
         },
       });
+      // sort product in cart
+      productsInCart.sort((a, b) => a.productId - b.productId);
 
       // check lại
       if (listProductId.length !== productsInCart.length) {
         return { message: arrMessage.MESSAGE_PRODUCT_NOT_FOUND_IN_CART };
+      }
+
+      // check quantity of products in cart <= amount of product in stock
+      // eslint-disable-next-line max-len
+      const isEnoughProductsInStocks = isProducts.filter((item, index) => item.amount >= productsInCart[index].quantity);
+
+      if (isEnoughProductsInStocks.length !== productsInCart.length) {
+        return { message: arrMessage.MESSAGE_NOT_ENOUGH_PRODUCT };
       }
 
       // check method payment
@@ -838,47 +870,6 @@ const prismaDataMethods = {
         paymentDate = new Date(Date.now());
         status = statusOrder.completed;
       }
-
-      // create order
-      // const createOrder = await prisma.order.create({
-      //   data: {
-      //     userId,
-      //     status: statusOrder.pending,
-      //     paymentMethod,
-      //     paymentDate,
-      //   },
-      // });
-
-      // // create order product
-      // // convert data to order product
-      // // sort product
-      // productsInCart.sort((a, b) => a.productId - b.productId);
-
-      // const dataOrderProduct = productsInCart.map((item, index) => {
-      //   const order = {
-      //     productId: item.productId,
-      //     quantity: item.quantity,
-      //     price: isProducts[index].price,
-      //     orderId: createOrder.id,
-      //   };
-
-      //   return order;
-      // });
-
-      // console.log(dataOrderProduct);
-
-      // const createOrderProduct = prisma.orderProduct.createMany({
-      //   data: dataOrderProduct,
-      // });
-
-      // const deleteCartProduct = prisma.cartProduct.deleteMany({
-      //   where: {
-      //     OR: listId,
-      //   },
-      // });
-
-      // const run = [createOrderProduct, deleteCartProduct];
-      // await prisma.$transaction(run);
 
       const result = await prisma.$transaction(async (Model) => {
         // create order
@@ -911,9 +902,19 @@ const prismaDataMethods = {
           data: dataOrderProduct,
         });
 
+        // reduce amount in table product
+        for (let i = 0; i < isProducts.length; i += 1) {
+          const { amount } = isProducts[i];
+          const { quantity } = productsInCart[i];
+          const remainingAmount = amount - quantity;
+          const productId = isProducts[i].id;
+
+          helper.updateAmountInProduct(productId, remainingAmount);
+        }
+
         const deleteCartProduct = await Model.cartProduct.deleteMany({
           where: {
-            OR: listId,
+            OR: listProductIdInCart,
           },
         });
 
@@ -921,23 +922,6 @@ const prismaDataMethods = {
       });
 
       console.log(result);
-
-      // console.log(isProducts);
-      // console.log(productsInCart);
-
-      // await prisma.$transaction([
-      //   // create order
-      //   // -- add payment
-      //   prisma.order.create({
-      //     data: {
-      //       userId,
-      //       status: statusOrder.pending,
-      //       paymentMethod,
-      //       paymentDate,
-      //     },
-      //   }),
-      //   prisma.orderProduct.createMany
-      // ]);
 
       return { message };
     } catch (error) {
